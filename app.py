@@ -39,15 +39,17 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     elif action == 'get_bundle_id':
         context.user_data['bundle_id'] = update.message.text
         await update.message.reply_text("Подписываю IPA файл, пожалуйста, подождите...")
+        
+        # Запуск подписания
         signed_ipa_path = sign_ipa('certificate.p12', context.user_data['p12_password'], 'profile.mobileprovision', 'app.ipa', context.user_data['bundle_id'])
         
         if signed_ipa_path:
-            plist_path, plist_link = create_plist(signed_ipa_path)
+            plist_path, plist_link = create_plist(signed_ipa_path, context.user_data['bundle_id'])
             await update.message.reply_text(f"Ваш файл подписан. Установите его через ссылку:\n{plist_link}")
         else:
             await update.message.reply_text("Ошибка при подписании файла.")
         
-        # Clean up files
+        # Очистка временных файлов
         clean_up_temp_files()
         context.user_data.clear()
 
@@ -63,10 +65,10 @@ def sign_ipa(p12_path, p12_password, mobileprovision_path, ipa_path, bundle_id):
     except subprocess.CalledProcessError:
         return None
 
-def create_plist(ipa_path):
+def create_plist(ipa_path, bundle_id):
     plist_path = "install.plist"
-    ipa_link = "https://your-heroku-app.herokuapp.com/files/" + ipa_path  # Adjust this URL to match your Heroku file-serving setup
-
+    ipa_link = f"https://your-heroku-app.herokuapp.com/files/{ipa_path}"
+    
     plist_content = f"""<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
@@ -86,7 +88,7 @@ def create_plist(ipa_path):
                     <key>metadata</key>
                     <dict>
                         <key>bundle-identifier</key>
-                        <string>{context.user_data['bundle_id']}</string>
+                        <string>{bundle_id}</string>
                         <key>bundle-version</key>
                         <string>1.0.0</string>
                         <key>kind</key>
@@ -102,14 +104,28 @@ def create_plist(ipa_path):
     with open(plist_path, "w") as plist_file:
         plist_file.write(plist_content)
     
-    # Return the URL for the .plist file
-    plist_link = f"https://your-heroku-app.herokuapp.com/files/{plist_path}"
+    plist_link = f"https://signipatest.herokuapp.com/files/{plist_path}"
     return plist_path, plist_link
-
-import os
 
 def clean_up_temp_files():
     files = ['certificate.p12', 'profile.mobileprovision', 'app.ipa', 'signed_app.ipa', 'install.plist']
     for file in files:
         if os.path.exists(file):
             os.remove(file)
+
+async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Этот текст не распознан как команда или документ.")
+
+def main():
+    application = Application.builder().token(TOKEN).build()
+    
+    # Добавление обработчиков
+    application.add_handler(CommandHandler("signipa", signipa))
+    application.add_handler(MessageHandler(filters.Document.ALL, handle_document))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+
+    # Запуск бота
+    application.run_polling()
+
+if __name__ == "__main__":
+    main()
