@@ -1,12 +1,11 @@
-from dotenv import load_dotenv
+
 import os
 import subprocess
 from telegram import Update, InputFile
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-load_dotenv()
-TOKEN = os.getenv("TELEGRAM_TOKEN")
-ZSIGN_PATH = os.getenv("ZSIGN_PATH")
+TOKEN = ("7333361907:AAFscxsmq1Kt-lcJs2JVOzoBjzxJ1LL6VOI")
+ZSIGN_PATH = ("/zsign/build/zsign")
 
 async def signipa(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Отправьте P12 сертификат.")
