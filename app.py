@@ -1,11 +1,10 @@
-
 import os
 import subprocess
 from telegram import Update, InputFile
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-TOKEN = ("7333361907:AAFscxsmq1Kt-lcJs2JVOzoBjzxJ1LL6VOI")
-ZSIGN_PATH = ("/zsign/build/zsign")
+TOKEN = "7333361907:AAFscxsmq1Kt-lcJs2JVOzoBjzxJ1LL6VOI"
+ZSIGN_PATH = "/zsign/build/zsign"
 
 async def signipa(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Отправьте P12 сертификат.")
@@ -16,7 +15,7 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     document = update.message.document
 
     if action == 'get_p12_certificate':
-        await document.download_to_drive('certificate.p12')
+        await document.download('certificate.p12')  # Correct method to download
         await update.message.reply_text("Отправьте пароль для P12 сертификата.")
         context.user_data['action'] = 'get_p12_password'
 
@@ -26,12 +25,12 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         context.user_data['action'] = 'get_mobileprovision'
 
     elif action == 'get_mobileprovision':
-        await document.download_to_drive('profile.mobileprovision')
+        await document.download('profile.mobileprovision')  # Correct method to download
         await update.message.reply_text("Отправьте IPA файл для подписания.")
         context.user_data['action'] = 'get_ipa'
 
     elif action == 'get_ipa':
-        await document.download_to_drive('app.ipa')
+        await document.download('app.ipa')  # Correct method to download
         await update.message.reply_text("Введите новый BundleID.")
         context.user_data['action'] = 'get_bundle_id'
 
