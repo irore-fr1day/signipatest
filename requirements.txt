@@ -1,0 +1,7 @@
+requests
+schedule
+python-telegram-bot
+python-dotenv
+aiohttp
+flask
+pyopenssl

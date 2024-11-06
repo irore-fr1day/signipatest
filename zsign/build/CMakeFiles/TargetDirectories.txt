@@ -1,0 +1,7 @@
+/Users/max/Desktop/NEW SIGN BOT/zsign/build/CMakeFiles/zsign.dir
+/Users/max/Desktop/NEW SIGN BOT/zsign/build/CMakeFiles/edit_cache.dir
+/Users/max/Desktop/NEW SIGN BOT/zsign/build/CMakeFiles/rebuild_cache.dir
+/Users/max/Desktop/NEW SIGN BOT/zsign/build/CMakeFiles/list_install_components.dir
+/Users/max/Desktop/NEW SIGN BOT/zsign/build/CMakeFiles/install.dir
+/Users/max/Desktop/NEW SIGN BOT/zsign/build/CMakeFiles/install/local.dir
+/Users/max/Desktop/NEW SIGN BOT/zsign/build/CMakeFiles/install/strip.dir
